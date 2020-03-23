@@ -8,12 +8,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Hosting.Internal;
+using System.Net.Http;
 
 namespace Weather.App.Service
 {
     public class WeatherService : IWeatherService
     {
         private IMemoryCache _cache;
+        private readonly string apiKey = "34327264272d90968fb6aa0d98d1f21d";
+        private string baseUrl = $"http://api.openweathermap.org/data/2.5/weather?";
+
         public WeatherService(IMemoryCache cache)
         {
             _cache = cache;
@@ -32,7 +36,7 @@ namespace Weather.App.Service
                         string filePath = files[0];
                         fullList = JsonConvert.DeserializeObject<List<City>>(File.ReadAllText(filePath));
                         _cache.Set("Full", fullList);
-                        
+
                     }
                 }
 
@@ -70,7 +74,50 @@ namespace Weather.App.Service
             {
                 throw ex;
             }
-            
+
         }
+
+        public async Task<WeatherData> GetWeatherByGeoLocation(string lon, string lat)
+        {
+            string geoLocUrl = $"lat={lat}&lon={lon}&appid={apiKey}";
+            return await GetWeather(geoLocUrl);
+        }
+
+        public async Task<WeatherData> GetWeatherByCityName(string cityName)
+        {
+            string cityUrl = $"q={cityName}&appid={apiKey}";
+            return await GetWeather(cityUrl);
+        }
+
+        public async Task<WeatherData> GetWeatherByCityId(string cityId)
+        {
+            string cityUrl = $"id={cityId}&appid={apiKey}";
+            return await GetWeather(cityUrl);
+        }
+
+        public async Task<WeatherData> GetWeatherByZip(string zipCode,string countryCode)
+        {
+            string cityUrl = $"zip={zipCode},{countryCode}&appid={apiKey}";
+            return await GetWeather(cityUrl);
+        }
+
+
+        private async Task<WeatherData> GetWeather(string url)
+        {
+            HttpResponseMessage apiResponse = null;
+            using (HttpClient client = new HttpClient())
+            {
+                apiResponse = await client.GetAsync($"{baseUrl}{url}");
+            }
+            if (apiResponse.IsSuccessStatusCode)
+            {
+                var resultJson = await apiResponse.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<WeatherData>(resultJson);
+                return resultObject;
+            }
+            return null;
+        }
+
+
     }
 }

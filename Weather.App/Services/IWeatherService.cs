@@ -8,6 +8,12 @@ namespace Weather.App.Service
 {
     public interface IWeatherService
     {
+        
         Task<List<City>> GetCities(string filter);
+        Task<WeatherData> GetWeatherByGeoLocation(string lon, string lat);
+        Task<WeatherData> GetWeatherByCityName(string cityName);
+        Task<WeatherData> GetWeatherByCityId(string cityId);
+        Task<WeatherData> GetWeatherByZip(string zipCode, string countryCode);
+        
     }
 }
