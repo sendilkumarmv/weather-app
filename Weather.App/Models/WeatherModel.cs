@@ -29,30 +29,31 @@ namespace Weather.App.Models
 
     public class Main
     {
-        public double temp { get; set; }
-        public double feels_like { get; set; }
-        public double temp_min { get; set; }
-        public double temp_max { get; set; }
-        public double pressure { get; set; }
-        public double humidity { get; set; }
+        public string temp { get; set; }
+        public string feels_like { get; set; }
+        public string temp_min { get; set; }
+        public string temp_max { get; set; }
+        public string pressure { get; set; }
+        public string humidity { get; set; }
 
     }
     public class Wind
     {
-        public double Speed { get; set; }
+        public string Speed { get; set; }
     }
     public class Clouds
     {
-        public double All { get; set; }
+        public string All { get; set; }
     }
 
     public class Sys
     {
-        public int type { get; set; }
-        public int id { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
         public string country { get; set; }
-        public long sunrise { get; set; }
-        public long sunset { get; set; }
+        public string sunrise { get; set; }
+        public string sunset { get; set; }
+       
     }
 
     public class Weather
@@ -72,11 +73,11 @@ namespace Weather.App.Models
         public string visibility { get; set; }
         public Wind wind { get; set; }
         public Clouds clouds { get; set; }
-        public long dt { get; set; }
+        public string dt { get; set; }
         public Sys sys { get; set; }
-        public long timezone { get; set; }
-        public long id { get; set; }
+        public string timezone { get; set; }
+        public string id { get; set; }
         public string name { get; set; }
-        public int cod { get; set; }
+        public string cod { get; set; }
     }
 }

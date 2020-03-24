@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Hosting.Internal;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Weather.App.Service
 {
@@ -113,11 +114,40 @@ namespace Weather.App.Service
             {
                 var resultJson = await apiResponse.Content.ReadAsStringAsync();
                 var resultObject = JsonConvert.DeserializeObject<WeatherData>(resultJson);
-                return resultObject;
+                
+                return ConvertAndAddUnits(resultObject);
             }
             return null;
         }
 
-
+        private WeatherData ConvertAndAddUnits(WeatherData weatherObject)
+        {
+            weatherObject.sys.sunrise = ConvertToDate(Convert.ToDouble(weatherObject.sys.sunrise), true);
+            weatherObject.sys.sunset = ConvertToDate(Convert.ToDouble(weatherObject.sys.sunset), true);
+            weatherObject.dt = ConvertToDate(Convert.ToDouble(weatherObject.dt));
+            weatherObject.main.temp = ConvertTemprature(weatherObject.main.temp);
+            weatherObject.main.feels_like = ConvertTemprature(weatherObject.main.feels_like);
+            weatherObject.main.temp_max = ConvertTemprature(weatherObject.main.temp_max);
+            weatherObject.main.temp_min = ConvertTemprature(weatherObject.main.temp_min);
+            weatherObject.weather[0].icon = GetIconUrl(weatherObject.weather[0].icon);
+            return weatherObject;
+        }
+        private string GetIconUrl(string icon)
+        {
+            return $"http://openweathermap.org/img/wn/{icon}@2x.png";
+        }
+        private string ConvertTemprature(string temprature)
+        {
+            var resultTemp = Convert.ToDecimal(temprature) - 273;
+            return $"{resultTemp} &deg; C";
+        }
+        private string ConvertToDate(double timeStamp, bool onlyTime = false)
+        {
+            var timeSpan = TimeSpan.FromSeconds(timeStamp);
+            var localDateTime = new DateTime(timeSpan.Ticks).ToLocalTime();
+            return onlyTime ? localDateTime.ToShortTimeString() : localDateTime.ToString();
+        }
     }
+
+   
 }
