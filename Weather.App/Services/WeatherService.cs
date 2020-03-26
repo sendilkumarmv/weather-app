@@ -18,6 +18,7 @@ namespace Weather.App.Service
         private IMemoryCache _cache;
         private readonly string apiKey = "34327264272d90968fb6aa0d98d1f21d";
         private string baseUrl = $"http://api.openweathermap.org/data/2.5/weather?";
+        private string baseHourlyUrl = $"http://pro.openweathermap.org/data/2.5/forecast/hourly?";
 
         public WeatherService(IMemoryCache cache)
         {

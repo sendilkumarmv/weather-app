@@ -50,7 +50,17 @@ namespace Weather.App.Controllers
         [Route("getweather/loc/{lon}/{lat}")]
         public async Task<IActionResult> GetWeatherByCoord(string lon, string lat)
         {
-            return Ok(await _weatherService.GetWeatherByGeoLocation(lon, lat));
+            var key = $"{lon}-{lat}";
+            WeatherData weatherData = null;
+            if (!_cache.TryGetValue(key, out weatherData))
+            {
+                if(weatherData == null)
+                {
+                     weatherData = await _weatherService.GetWeatherByGeoLocation(lon, lat);
+                    _cache.Set(key, weatherData, new TimeSpan(1,0,0));
+                }
+            }
+            return Ok(weatherData);
         }
 
         [HttpGet]
